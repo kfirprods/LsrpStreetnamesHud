@@ -124,7 +124,6 @@
     </Content>
     <Resource Include="map_icon.ico" />
     <Resource Include="Resources\map_icon.ico" />
-    <Resource Include="lsrp_map.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
