@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2006
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LsrpStreetNamesHud", "LsrpStreetNamesHud\LsrpStreetNamesHud.csproj", "{D88F0F5B-C705-4557-BD97-D1A02CF4DC64}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D88F0F5B-C705-4557-BD97-D1A02CF4DC64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D88F0F5B-C705-4557-BD97-D1A02CF4DC64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D88F0F5B-C705-4557-BD97-D1A02CF4DC64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D88F0F5B-C705-4557-BD97-D1A02CF4DC64}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FCBEA975-9BB2-4AEB-862A-5EBA0C02905B}
+	EndGlobalSection
+EndGlobal
