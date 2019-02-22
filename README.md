@@ -5,4 +5,6 @@ v0.1 = The area name is the GTA:SA area, e.g. Rodeo, Commerce...
 
 v1.0 = The area name will be replaced with LS-RP street names
 
-![HUD demonstrated in-game](https://i.imgur.com/nCKe8l1.png)
+v2.0 = The program's UI will feature a live map that you can toss over to your second screen while playing
+
+![HUD demonstrated in-game](https://i.imgur.com/14ixlUl.png)
