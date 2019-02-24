@@ -2,16 +2,24 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Timers;
 using DX9OverlayAPIWrapper;
 using LsrpStreetNamesHud.GtaApi;
+using NonInvasiveKeyboardHookLibrary;
 using ProcessesWatchdog;
 
 namespace LsrpStreetNamesHud.HudOverlay
 {
     public class IngameHudViewModel : INotifyPropertyChanged
     {
+        // Key codes for moving the HUD around
+        private const int Numpad2 = 0x62, Numpad4 = 0x64, Numpad6 = 0x66, Numpad8 = 0x68, KeyM = 0x4D, NumpadPlus = 0x6B, NumpadMinus = 0x6D;
+
+        // This file will be created in %AppData% to persist user configuration
+        private const string HudPreferencesFileName = "LSRP Street Names HUD preferences.json";
+
         private bool _isEnabled = true;
         public bool IsEnabled
         {
@@ -35,8 +43,22 @@ namespace LsrpStreetNamesHud.HudOverlay
             }
         }
 
+        private readonly KeyboardHookManager _keyboardHookManager;
+        private bool _isHudMovingEnabled;
+        private TextLabel _hudText;
+        private readonly object _updateTimerLock = new object();
+        
+        private readonly HudPreferences _hudPreferences;
+        private string _hudPreferencesFilePath;
+
         public IngameHudViewModel()
         {
+            this._hudPreferencesFilePath =
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    HudPreferencesFileName);
+
+            this._hudPreferences = HudPreferences.Load(this._hudPreferencesFilePath);
+
             var updateHudTimer = new Timer(500);
             updateHudTimer.Elapsed += UpdateHudTimer_Elapsed;
             
@@ -49,20 +71,99 @@ namespace LsrpStreetNamesHud.HudOverlay
             };
             watchdog.OnProcessClosed += () =>
             {
+                this._keyboardHookManager.Stop();
+
                 UdfBasedApi.GtaProcessId = null;
                 updateHudTimer.Stop();
                 this._hudText = null;
             };
             watchdog.Start();
+
+            this._keyboardHookManager = new KeyboardHookManager();
+            this._keyboardHookManager.Start();
+
+            this._keyboardHookManager.RegisterHotkey(ModifierKeys.Alt, KeyM, () =>
+            {
+                // TODO: Show SAMP chat message to indicate the change of state and the importance of hitting Alt+M again to save changes
+
+                this._isHudMovingEnabled = !this._isHudMovingEnabled;
+
+                if (!this._isHudMovingEnabled)
+                {
+                    this._hudPreferences.Save(this._hudPreferencesFilePath);
+                }
+            });
+
+            this._keyboardHookManager.RegisterHotkey(NumpadPlus, () => { this.ResizeHudText(1); });
+            this._keyboardHookManager.RegisterHotkey(NumpadMinus, () => { this.ResizeHudText(-1); });
+
+            this._keyboardHookManager.RegisterHotkey(Numpad2, () =>
+            {
+                this.MoveHudText(0, 1);
+            });
+
+            this._keyboardHookManager.RegisterHotkey(ModifierKeys.Alt, Numpad2, () =>
+            {
+                this.MoveHudText(0, 10);
+            });
+
+            this._keyboardHookManager.RegisterHotkey(Numpad6, () =>
+            {
+                this.MoveHudText(1, 0);
+            });
+
+            this._keyboardHookManager.RegisterHotkey(ModifierKeys.Alt, Numpad6, () =>
+            {
+                this.MoveHudText(10, 0);
+            });
+
+            this._keyboardHookManager.RegisterHotkey(Numpad8, () =>
+            {
+                this.MoveHudText(0, -1);
+            });
+
+            this._keyboardHookManager.RegisterHotkey(ModifierKeys.Alt, Numpad8, () =>
+            {
+                this.MoveHudText(0, -10);
+            });
+
+            this._keyboardHookManager.RegisterHotkey(Numpad4, () =>
+            {
+                this.MoveHudText(-1, 0);
+            });
+
+            this._keyboardHookManager.RegisterHotkey(ModifierKeys.Alt, Numpad4, () =>
+            {
+                this.MoveHudText(-10, 0);
+            });
+        }
+
+        private void MoveHudText(int shiftX, int shiftY)
+        {
+            if (!this._isHudMovingEnabled) return;
+            if (this._hudText == null) return;
+            if (!this._hudText.IsVisible) return;
+
+            this._hudText.Position = new Point(this._hudText.Position.X + shiftX, this._hudText.Position.Y + shiftY);
+
+            this._hudPreferences.X = this._hudText.Position.X;
+            this._hudPreferences.Y = this._hudText.Position.Y;
+        }
+
+        private void ResizeHudText(int fontShift)
+        {
+            if (!this._isHudMovingEnabled) return;
+            if (this._hudText == null) return;
+            if (!this._hudText.IsVisible) return;
+
+            this._hudText.FontSize += fontShift;
+            this._hudPreferences.FontSize = this._hudText.FontSize;
         }
 
         public void Destroy()
         {
             this._hudText?.Destroy();
         }
-
-        private TextLabel _hudText;
-        private readonly object _updateTimerLock = new object();
 
         private void UpdateHudTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
@@ -105,13 +206,12 @@ namespace LsrpStreetNamesHud.HudOverlay
                 // Get zone (e.g. Rodeo, Commerce...)
                 var playerZone = UdfBasedApi.GetPlayerCurrentZone();
 
-                Debug.WriteLine($"{currentFacingAngle} - {playerZone}");
+                // Debug.WriteLine($"{currentFacingAngle} - {playerZone}");
 
                 // Initialize overlay text label if necessary
                 if (this._hudText == null)
                 {
-                    // (60, 570) places the label nicely below the map and works nicely on all resolutions
-                    this._hudText = new TextLabel("Arial", 12, 60, 570,
+                    this._hudText = new TextLabel("Arial", 12, this._hudPreferences.X, this._hudPreferences.Y,
                         Color.DimGray, "Doakes HUD");
                 }
 

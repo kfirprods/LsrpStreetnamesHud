@@ -46,6 +46,12 @@
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net46\MahApps.Metro.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NonInvasiveKeyboardHookLibrary, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NonInvasiveKeyboardHookLibrary.1.3.0\lib\net452\NonInvasiveKeyboardHookLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="ProcessesWatchdog, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\packages\ProcessesWatchdog.2.0.0\lib\net461\ProcessesWatchdog.dll</HintPath>
     </Reference>
@@ -85,6 +91,7 @@
     <Compile Include="Common\Utilities.cs" />
     <Compile Include="GtaApi\Internal.cs" />
     <Compile Include="GtaApi\UdfBasedApi.cs" />
+    <Compile Include="HudOverlay\HudPreferences.cs" />
     <Compile Include="HudOverlay\IngameHudViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
