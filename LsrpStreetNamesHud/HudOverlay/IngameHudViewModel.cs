@@ -1,21 +1,22 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Timers;
 using DX9OverlayAPIWrapper;
-using LsrpStreetNamesHud.GtaApi;
+using GtaSampApi;
 using NonInvasiveKeyboardHookLibrary;
 using ProcessesWatchdog;
 
 namespace LsrpStreetNamesHud.HudOverlay
 {
+    // TODO: This class shouldn't have all the logic contained inside of it. Split it up!
     public class IngameHudViewModel : INotifyPropertyChanged
     {
         // Key codes for moving the HUD around
         private const int Numpad2 = 0x62, Numpad4 = 0x64, Numpad6 = 0x66, Numpad8 = 0x68, KeyM = 0x4D, NumpadPlus = 0x6B, NumpadMinus = 0x6D;
+        private const int KeyH = 0x48;
 
         // This file will be created in %AppData% to persist user configuration
         private const string HudPreferencesFileName = "LSRP Street Names HUD preferences.json";
@@ -38,7 +39,11 @@ namespace LsrpStreetNamesHud.HudOverlay
             get => this._isLimitedToVehicles;
             set
             {
+                if (this._isLimitedToVehicles == value) return;
+
                 this._isLimitedToVehicles = value;
+                this._hudPreferences.OnlyVisibleInVehicles = value;
+                this._hudPreferences.Save();
                 this.OnPropertyChanged();
             }
         }
@@ -49,15 +54,14 @@ namespace LsrpStreetNamesHud.HudOverlay
         private readonly object _updateTimerLock = new object();
         
         private readonly HudPreferences _hudPreferences;
-        private string _hudPreferencesFilePath;
 
         public IngameHudViewModel()
         {
-            this._hudPreferencesFilePath =
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    HudPreferencesFileName);
+            var hudPreferencesFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                HudPreferencesFileName);
 
-            this._hudPreferences = HudPreferences.Load(this._hudPreferencesFilePath);
+            this._hudPreferences = HudPreferences.Load(hudPreferencesFilePath);
+            this.IsLimitedToVehicles = this._hudPreferences.OnlyVisibleInVehicles;
 
             var updateHudTimer = new Timer(500);
             updateHudTimer.Elapsed += UpdateHudTimer_Elapsed;
@@ -66,37 +70,49 @@ namespace LsrpStreetNamesHud.HudOverlay
             var watchdog = new ProcessWatchdog("gta_sa");
             watchdog.OnProcessOpened += pid =>
             {
-                UdfBasedApi.GtaProcessId = pid;
+                SampApi.GtaProcessId = pid;
                 updateHudTimer.Start();
             };
             watchdog.OnProcessClosed += () =>
             {
                 this._keyboardHookManager.Stop();
 
-                UdfBasedApi.GtaProcessId = null;
+                SampApi.GtaProcessId = null;
                 updateHudTimer.Stop();
                 this._hudText = null;
             };
             watchdog.Start();
 
+            // TODO: Use project-wide singleton to make sure no more than 1 keyboard hook manager is ever instantiated
             this._keyboardHookManager = new KeyboardHookManager();
             this._keyboardHookManager.Start();
 
+            // TODO: Move the mover logic elsewhere
+            #region HUD Mover
+            // Key combination for toggling the HUD mover
             this._keyboardHookManager.RegisterHotkey(ModifierKeys.Alt, KeyM, () =>
             {
-                // TODO: Show SAMP chat message to indicate the change of state and the importance of hitting Alt+M again to save changes
-
                 this._isHudMovingEnabled = !this._isHudMovingEnabled;
-
+                
                 if (!this._isHudMovingEnabled)
                 {
-                    this._hudPreferences.Save(this._hudPreferencesFilePath);
+                    this._hudPreferences.Save();
+                    SampApi.AddMessageToChat("{FFFFFF}[{FF0000}HUD{FFFFFF}] Disabled HUD mover and saved your settings");
+                }
+                else
+                {
+                    SampApi.AddMessageToChat(
+                        "{FFFFFF}[{FF0000}HUD{FFFFFF}] HUD mover enabled. Use NumPad arrows (hold Alt to boost) for relocating NumPad +/- for resizing");
+                    SampApi.AddMessageToChat(
+                        "{FFFFFF}[{FF0000}HUD{FFFFFF}] (!) To save your changes you must disable the HUD mover with Alt+M");
                 }
             });
 
+            // Keys for resizing the HUD with the mover
             this._keyboardHookManager.RegisterHotkey(NumpadPlus, () => { this.ResizeHudText(1); });
             this._keyboardHookManager.RegisterHotkey(NumpadMinus, () => { this.ResizeHudText(-1); });
 
+            // Keys for moving the HUD with the mover
             this._keyboardHookManager.RegisterHotkey(Numpad2, () =>
             {
                 this.MoveHudText(0, 1);
@@ -136,6 +152,13 @@ namespace LsrpStreetNamesHud.HudOverlay
             {
                 this.MoveHudText(-10, 0);
             });
+            #endregion
+
+            // Keyboard shortcut for toggling the HUD
+            this._keyboardHookManager.RegisterHotkey(ModifierKeys.Alt, KeyH, () =>
+            {
+                this.IsEnabled = !this.IsEnabled;
+            });
         }
 
         private void MoveHudText(int shiftX, int shiftY)
@@ -173,11 +196,11 @@ namespace LsrpStreetNamesHud.HudOverlay
                 // Show nothing if the player disabled the HUD
                 if (!this.IsEnabled ||
                     // Show nothing if the player is in an interior
-                    UdfBasedApi.IsPlayerInAnyInterior() ||
+                    SampApi.IsPlayerInAnyInterior() ||
                     // Show nothing if the player is in the escape menu
-                    UdfBasedApi.IsPlayerInEscapeMenu() ||
+                    SampApi.IsPlayerInEscapeMenu() ||
                     // Show nothing if the player is on foot and had limited the HUD to show only when they're in vehicles
-                    this.IsLimitedToVehicles && !UdfBasedApi.IsPlayerInAnyVehicle())
+                    this.IsLimitedToVehicles && !SampApi.IsPlayerInAnyVehicle())
                 {
                     if (this._hudText != null)
                         this._hudText.IsVisible = false;
@@ -185,7 +208,7 @@ namespace LsrpStreetNamesHud.HudOverlay
                 }
                 #endregion
 
-                var coordinates = UdfBasedApi.GetPlayerCoordinates();
+                var coordinates = SampApi.GetPlayerCoordinates();
                 if (!coordinates.HasValue) return;
 
                 // Prevent premature rendering (i.e. user hasn't even connected to the server yet)
@@ -193,7 +216,7 @@ namespace LsrpStreetNamesHud.HudOverlay
                 if (coordinates.Value.X == 0 && coordinates.Value.Y == 0 && coordinates.Value.Z == 0) return;
 
                 // Get direction (N/W/S/E)
-                var currentFacingAngle = UdfBasedApi.GetPlayerFacingAngle();
+                var currentFacingAngle = SampApi.GetPlayerFacingAngle();
 
                 // Even more premature rendering prevention - this is the facing angle when you're in the LS-RP login screen
                 if (Math.Abs(currentFacingAngle - (-98)) < 0.0001)
@@ -204,14 +227,14 @@ namespace LsrpStreetNamesHud.HudOverlay
                 var currentDirection = FacingAngleToDirection(currentFacingAngle);
 
                 // Get zone (e.g. Rodeo, Commerce...)
-                var playerZone = UdfBasedApi.GetPlayerCurrentZone();
+                var playerZone = SampApi.GetPlayerCurrentZone();
 
                 // Debug.WriteLine($"{currentFacingAngle} - {playerZone}");
 
                 // Initialize overlay text label if necessary
                 if (this._hudText == null)
                 {
-                    this._hudText = new TextLabel("Arial", 12, this._hudPreferences.X, this._hudPreferences.Y,
+                    this._hudText = new TextLabel("Arial", this._hudPreferences.FontSize, this._hudPreferences.X, this._hudPreferences.Y,
                         Color.DimGray, "Doakes HUD");
                 }
 
@@ -221,6 +244,7 @@ namespace LsrpStreetNamesHud.HudOverlay
             }
         }
 
+        // TODO: Move to a utility module
         private static string FacingAngleToDirection(double angle)
         {
             if (angle >= -45 && angle < 45)
@@ -241,11 +265,13 @@ namespace LsrpStreetNamesHud.HudOverlay
             }
         }
 
+        #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

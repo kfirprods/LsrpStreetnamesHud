@@ -23,7 +23,7 @@
     </mah:MetroWindow.IconTemplate>
     <Grid>
         <StackPanel Margin="10">
-            <mah:ToggleSwitch Content="HUD Enabled"
+            <mah:ToggleSwitch Content="HUD Enabled (Alt+H)"
                               IsChecked="{Binding IsEnabled}" />
 
             <mah:ToggleSwitch Content="Only show when I'm in a vehicle"

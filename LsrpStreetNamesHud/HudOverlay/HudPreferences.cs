@@ -17,7 +17,13 @@ namespace LsrpStreetNamesHud.HudOverlay
 
         [JsonProperty]
         public int FontSize { get; set; } = 12;
+
+        [JsonProperty]
+        public bool OnlyVisibleInVehicles { get; set; }
         #endregion
+
+        [JsonIgnore]
+        public string FilePath { get; set; }
 
         #region API
         public static HudPreferences Load(string hudPreferencesFilePath)
@@ -31,16 +37,18 @@ namespace LsrpStreetNamesHud.HudOverlay
             lock (_hudPreferencesFileLock)
             {
                 var serializedPreferences = File.ReadAllText(hudPreferencesFilePath);
-                return JsonConvert.DeserializeObject<HudPreferences>(serializedPreferences);
+                var preferences = JsonConvert.DeserializeObject<HudPreferences>(serializedPreferences);
+                preferences.FilePath = hudPreferencesFilePath;
+                return preferences;
             }
         }
 
-        public void Save(string hudPreferencesFilePath)
+        public void Save()
         {
             lock (_hudPreferencesFileLock)
             {
                 var serializedPreferences = JsonConvert.SerializeObject(this);
-                File.WriteAllText(hudPreferencesFilePath, serializedPreferences);
+                File.WriteAllText(this.FilePath, serializedPreferences);
             }
         }
         #endregion

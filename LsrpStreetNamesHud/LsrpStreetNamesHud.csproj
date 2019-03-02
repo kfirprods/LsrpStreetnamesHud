@@ -40,8 +40,11 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
     </Reference>
-    <Reference Include="DX9OverlayAPIWrapper, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DX9OverlayAPIWrapper.1.1.0\lib\net40\DX9OverlayAPIWrapper.dll</HintPath>
+    <Reference Include="DX9OverlayAPIWrapper, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DX9OverlayAPIWrapper.1.2.0\lib\net40\DX9OverlayAPIWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="GtaSampApi, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GtaSampApi.2.0.0\lib\net461\GtaSampApi.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net46\MahApps.Metro.dll</HintPath>
@@ -89,8 +92,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Common\Utilities.cs" />
-    <Compile Include="GtaApi\Internal.cs" />
-    <Compile Include="GtaApi\UdfBasedApi.cs" />
     <Compile Include="HudOverlay\HudPreferences.cs" />
     <Compile Include="HudOverlay\IngameHudViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
