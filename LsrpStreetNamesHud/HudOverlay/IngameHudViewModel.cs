@@ -75,8 +75,6 @@ namespace LsrpStreetNamesHud.HudOverlay
             };
             watchdog.OnProcessClosed += () =>
             {
-                this._keyboardHookManager.Stop();
-
                 SampApi.GtaProcessId = null;
                 updateHudTimer.Stop();
                 this._hudText = null;
@@ -97,14 +95,14 @@ namespace LsrpStreetNamesHud.HudOverlay
                 if (!this._isHudMovingEnabled)
                 {
                     this._hudPreferences.Save();
-                    SampApi.AddMessageToChat("{FFFFFF}[{FF0000}HUD{FFFFFF}] Disabled HUD mover and saved your settings");
+                    SampApi.AddMessageToChat("{FFFFFF}[{FF0000}HUD{FFFFFF}] HUD mover {FF0000}disabled{FFFFFF}. Your settings were saved");
                 }
                 else
                 {
                     SampApi.AddMessageToChat(
-                        "{FFFFFF}[{FF0000}HUD{FFFFFF}] HUD mover enabled. Use NumPad arrows (hold Alt to boost) for relocating NumPad +/- for resizing");
+                        "{FFFFFF}[{FF0000}HUD{FFFFFF}] HUD mover {00FF00}enabled{FFFFFF}. Use NumPad arrows (hold Alt to boost) for relocating NumPad +/- for resizing");
                     SampApi.AddMessageToChat(
-                        "{FFFFFF}[{FF0000}HUD{FFFFFF}] (!) To save your changes you must disable the HUD mover with Alt+M");
+                        "{FFFFFF}[{FF0000}HUD{FFFFFF}] ({FF0000}!{FFFFFF}) To save your changes you must disable the HUD mover with Alt+M");
                 }
             });
 
