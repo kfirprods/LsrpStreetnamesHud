@@ -14,6 +14,9 @@ namespace LsrpStreetNamesHud.HudOverlay
     // TODO: This class shouldn't have all the logic contained inside of it. Split it up!
     public class IngameHudViewModel : INotifyPropertyChanged
     {
+        private static readonly log4net.ILog Logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         // Key codes for moving the HUD around
         private const int Numpad2 = 0x62, Numpad4 = 0x64, Numpad6 = 0x66, Numpad8 = 0x68, KeyM = 0x4D, NumpadPlus = 0x6B, NumpadMinus = 0x6D;
         private const int KeyH = 0x48;
@@ -70,11 +73,15 @@ namespace LsrpStreetNamesHud.HudOverlay
             var watchdog = new ProcessWatchdog("gta_sa");
             watchdog.OnProcessOpened += pid =>
             {
+                Logger.Info("GTA SA process detected, starting timer");
+
                 SampApi.GtaProcessId = pid;
                 updateHudTimer.Start();
             };
             watchdog.OnProcessClosed += () =>
             {
+                Logger.Info("GTA SA process terminated, stopping timer");
+
                 SampApi.GtaProcessId = null;
                 updateHudTimer.Stop();
                 this._hudText = null;
@@ -91,6 +98,7 @@ namespace LsrpStreetNamesHud.HudOverlay
             this._keyboardHookManager.RegisterHotkey(ModifierKeys.Alt, KeyM, () =>
             {
                 this._isHudMovingEnabled = !this._isHudMovingEnabled;
+                Logger.Info($"(Alt+M) HUD mover state is now {this._isHudMovingEnabled}");
                 
                 if (!this._isHudMovingEnabled)
                 {
@@ -183,6 +191,8 @@ namespace LsrpStreetNamesHud.HudOverlay
 
         public void Destroy()
         {
+            Logger.Info("Destroying HUD text label");
+
             this._hudText?.Destroy();
         }
 
