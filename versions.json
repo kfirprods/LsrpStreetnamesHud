@@ -11,12 +11,7 @@
     },
     {
         version_number: "0.3.0.0",
-        release_notes: "Test notes",
-        download_link: "Test link"
-    },
-    {
-        version_number: "0.4.0.0",
-        release_notes: "https://forum.ls-rp.io/viewtopic.php?f=1578&t=703128&start=15#p8999213",
-        download_link: "http://www.mediafire.com/file/49i51l4315fa2bu/LS-RP_Street_Names_HUD_v0.2.zip/file"
+        release_notes: "https://forum.ls-rp.io/viewtopic.php?f=1578&t=703128&p=9009241#p9009241",
+        download_link: "https://www.mediafire.com/file/crypbow99q8egjk/LS-RP_Street_Names_HUD_v0.3.rar/file"
     }
 ]
