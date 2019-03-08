@@ -1,4 +1,4 @@
-﻿[
+[
     {
         version_number: "0.1.0.0",
         release_notes: "Initial release with standard GTA SA area names",
@@ -8,5 +8,10 @@
         version_number: "0.2.0.0",
         release_notes: "Alt+M to move the HUD",
         download_link: "http://www.mediafire.com/file/49i51l4315fa2bu/LS-RP_Street_Names_HUD_v0.2.zip/file"
+    },
+    {
+        version_number: "0.3.0.0",
+        release_notes: "Test notes",
+        download_link: "Test link"
     }
 ]
