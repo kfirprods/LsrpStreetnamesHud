@@ -1,17 +1,22 @@
 [
     {
         version_number: "0.1.0.0",
-        release_notes: "Initial release with standard GTA SA area names",
+        release_notes: "https://forum.ls-rp.io/viewtopic.php?f=1578&t=703128#p8985251",
         download_link: "http://www.mediafire.com/file/1qt2a0vv6a43m58/LS-RP_Street_Names_HUD_v0.1.zip/file"
     },
     {
         version_number: "0.2.0.0",
-        release_notes: "Alt+M to move the HUD",
+        release_notes: "https://forum.ls-rp.io/viewtopic.php?f=1578&t=703128&start=15#p8999213",
         download_link: "http://www.mediafire.com/file/49i51l4315fa2bu/LS-RP_Street_Names_HUD_v0.2.zip/file"
     },
     {
         version_number: "0.3.0.0",
         release_notes: "Test notes",
         download_link: "Test link"
+    },
+    {
+        version_number: "0.4.0.0",
+        release_notes: "https://forum.ls-rp.io/viewtopic.php?f=1578&t=703128&start=15#p8999213",
+        download_link: "http://www.mediafire.com/file/49i51l4315fa2bu/LS-RP_Street_Names_HUD_v0.2.zip/file"
     }
 ]
