@@ -38,7 +38,7 @@ namespace LsrpStreetNamesHud.HudOverlay
             if (!File.Exists(hudPreferencesFilePath))
             {
                 Logger.Info("Hud preferences file not found. Returning default preferences");
-                return new HudPreferences();
+                return new HudPreferences() { FilePath = hudPreferencesFilePath };
             }
 
             lock (_hudPreferencesFileLock)
