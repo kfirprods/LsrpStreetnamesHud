@@ -1,11 +1,11 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
 
-namespace LsrpStreetNamesHud.HudOverlay
+namespace LsrpStreetNamesHud.Models
 {
     public class HudPreferences
     {
-        private static readonly object _hudPreferencesFileLock = new object();
+        private static readonly object HudPreferencesFileLock = new object();
 
         private static readonly log4net.ILog Logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -41,7 +41,7 @@ namespace LsrpStreetNamesHud.HudOverlay
                 return new HudPreferences() { FilePath = hudPreferencesFilePath };
             }
 
-            lock (_hudPreferencesFileLock)
+            lock (HudPreferencesFileLock)
             {
                 var serializedPreferences = File.ReadAllText(hudPreferencesFilePath);
                 var preferences = JsonConvert.DeserializeObject<HudPreferences>(serializedPreferences);
@@ -57,7 +57,7 @@ namespace LsrpStreetNamesHud.HudOverlay
         {
             Logger.Info($"Saving hud preferences to {this.FilePath}");
 
-            lock (_hudPreferencesFileLock)
+            lock (HudPreferencesFileLock)
             {
                 var serializedPreferences = JsonConvert.SerializeObject(this);
                 File.WriteAllText(this.FilePath, serializedPreferences);

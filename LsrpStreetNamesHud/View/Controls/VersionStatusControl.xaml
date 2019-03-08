@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="LsrpStreetNamesHud.View.Controls.VersionStatusControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="clr-namespace:LsrpStreetNamesHud.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             x:Name="VersionStatusUserControl">
+    <StackPanel Orientation="Horizontal">
+        <ui:PathBasedIcon Width="16"
+                          Height="16"
+                          VerticalAlignment="Center">
+            <ui:PathBasedIcon.Style>
+                <Style TargetType="{x:Type ui:PathBasedIcon}">
+                    <Setter Property="IconData" Value="{StaticResource AlertIcon}" />
+                    <Setter Property="Foreground" Value="#f44336" />
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=VersionStatusUserControl, Path=IsUpToDate}"
+                                     Value="True">
+                            <Setter Property="IconData" Value="{StaticResource TickIcon}" />
+                            <Setter Property="Foreground" Value="#00c853" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ui:PathBasedIcon.Style>
+        </ui:PathBasedIcon>
+
+        <Label VerticalAlignment="Center">
+            <Label.Style>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=VersionStatusUserControl, Path=IsUpToDate}"
+                                     Value="False">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Label.Style>
+            <Label.Content>
+                <TextBlock>
+                    Version <TextBlock Text="{Binding ElementName=VersionStatusUserControl, Path=LatestVersion.VersionNumber}"
+                                       FontWeight="Bold" />
+                    is now available: 
+                    <Hyperlink NavigateUri="{Binding ElementName=VersionStatusUserControl, Path=LatestVersion.DownloadLink}"
+                               TextDecorations="None"
+                               RequestNavigate="Hyperlink_OnRequestNavigate">
+                        <TextBlock Text="Download now" 
+                                   Foreground="{StaticResource AccentColorBrush}" 
+                                   FontWeight="Bold" />
+                    </Hyperlink>
+                     or
+                    <Hyperlink NavigateUri="{Binding ElementName=VersionStatusUserControl, Path=LatestVersion.ReleaseNotes}"
+                               TextDecorations="None"
+                               RequestNavigate="Hyperlink_OnRequestNavigate">
+                        <TextBlock Text="view release notes" 
+                                   Foreground="{StaticResource AccentColorBrush}" 
+                                   FontWeight="Bold" />
+                    </Hyperlink>
+                </TextBlock>
+            </Label.Content>
+        </Label>
+
+        <Label FontSize="12">
+            <Label.Style>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="Visibility" Value="Visible" />
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=VersionStatusUserControl, Path=IsUpToDate}"
+                                     Value="False">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Label.Style>
+            <Label.Content>
+                <TextBlock>
+                    Your version (<TextBlock Text="{Binding ElementName=VersionStatusUserControl, Path=LatestVersion.VersionNumber}" />) is up to date
+                </TextBlock>
+            </Label.Content>
+        </Label>
+    </StackPanel>
+</UserControl>

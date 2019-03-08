@@ -4,15 +4,16 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-                 xmlns:hudOverlay="clr-namespace:LsrpStreetNamesHud.HudOverlay"
+                 xmlns:viewModels="clr-namespace:LsrpStreetNamesHud.ViewModels"
+                 xmlns:controls="clr-namespace:LsrpStreetNamesHud.View.Controls"
                  mc:Ignorable="d"
                  Closing="MainWindow_OnClosing"
-                 Title="LS-RP Street Names HUD (Open Source) - v0.2" 
+                 Title="LS-RP Street Names HUD (Open Source) - v0.3" 
                  Height="500" 
                  Width="600"
                  MinHeight="200"
                  MinWidth="400"
-                 d:DataContext="{d:DesignInstance hudOverlay:IngameHudViewModel}">
+                 d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
     <mah:MetroWindow.IconTemplate>
         <DataTemplate>
             <Canvas Width="24" Height="24" Margin="5, 0, 0, 0">
@@ -22,16 +23,34 @@
         </DataTemplate>
     </mah:MetroWindow.IconTemplate>
     <Grid>
-        <StackPanel Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="10"
+                    Grid.Row="0">
             <mah:ToggleSwitch Content="HUD Enabled (Alt+H)"
-                              IsChecked="{Binding IsEnabled}" />
+                              IsChecked="{Binding HudViewModel.IsEnabled}" />
 
             <mah:ToggleSwitch Content="Only show when I'm in a vehicle"
-                              IsChecked="{Binding IsLimitedToVehicles}" />
+                              IsChecked="{Binding HudViewModel.IsLimitedToVehicles}" />
+
+            <mah:ToggleSwitch Content="Start with windows"
+                              IsChecked="{Binding ShouldStartWithWindows}" />
+
+            <mah:ToggleSwitch Content="Minimize to system tray"
+                              IsChecked="{Binding ShouldMinimizeToTray}" />
         </StackPanel>
+
+        <controls:VersionStatusControl Grid.Row="1"
+                                       HorizontalAlignment="Center"
+                                       Margin="0, 0, 0, 20" />
 
         <TextBlock HorizontalAlignment="Left"
                    VerticalAlignment="Bottom"
+                   Grid.RowSpan="2"
+                   Grid.ColumnSpan="2"
                    Margin="5, 0, 0, 5"
                    FontSize="10"
                    Text="By Doakes" />

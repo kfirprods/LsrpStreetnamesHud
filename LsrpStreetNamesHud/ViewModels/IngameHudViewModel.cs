@@ -6,10 +6,11 @@ using System.Runtime.CompilerServices;
 using System.Timers;
 using DX9OverlayAPIWrapper;
 using GtaSampApi;
+using LsrpStreetNamesHud.Models;
 using NonInvasiveKeyboardHookLibrary;
 using ProcessesWatchdog;
 
-namespace LsrpStreetNamesHud.HudOverlay
+namespace LsrpStreetNamesHud.ViewModels
 {
     // TODO: This class shouldn't have all the logic contained inside of it. Split it up!
     public class IngameHudViewModel : INotifyPropertyChanged

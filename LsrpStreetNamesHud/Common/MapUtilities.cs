@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace LsrpStreetNamesHud.Common
 {
-    public class Utilities
+    public class MapUtilities
     {
         /// <summary>
         /// Converts GTA:SA coordinates (which go from -3072 to +3072) to map coordinates (i.e. 0 to 6144)
